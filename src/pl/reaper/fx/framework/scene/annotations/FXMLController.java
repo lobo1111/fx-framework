@@ -1,4 +1,4 @@
-package pl.reaper.fx.framework.scene.beans.annotations;
+package pl.reaper.fx.framework.scene.annotations;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

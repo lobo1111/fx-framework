@@ -4,8 +4,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import pl.reaper.fx.framework.scene.beans.SceneController;
-import pl.reaper.fx.framework.scene.beans.annotations.SceneEventHandler;
+import pl.reaper.fx.framework.scene.SceneController;
+import pl.reaper.fx.framework.scene.annotations.SceneEventHandler;
 
 public class EventDispatcher {
 

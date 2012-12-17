@@ -1,9 +1,9 @@
-package pl.reaper.fx.framework.scene.beans.scene;
+package pl.reaper.fx.framework.scene;
 
 import java.util.ArrayList;
 import java.util.List;
-import pl.reaper.fx.framework.scene.beans.SceneController;
-import pl.reaper.fx.framework.scene.beans.SceneLoader;
+import pl.reaper.fx.framework.scene.SceneController;
+import pl.reaper.fx.framework.scene.helpers.SceneLoader;
 import pl.reaper.fx.framework.scene.events.EventDispatcher;
 import pl.reaper.fx.framework.scene.events.SceneEvent;
 

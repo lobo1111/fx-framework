@@ -1,6 +1,6 @@
 package pl.reaper.fx.framework.scene.events.stage;
 
-import pl.reaper.fx.framework.scene.beans.SceneController;
+import pl.reaper.fx.framework.scene.SceneController;
 import pl.reaper.fx.framework.scene.events.SceneEvent;
 
 public class StageClosed extends SceneEvent {

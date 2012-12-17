@@ -1,11 +1,12 @@
-package pl.reaper.fx.framework.scene.beans;
+package pl.reaper.fx.framework.scene.helpers;
 
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-import pl.reaper.fx.framework.scene.beans.annotations.FXMLController;
+import pl.reaper.fx.framework.scene.SceneController;
+import pl.reaper.fx.framework.scene.annotations.FXMLController;
 
 public class SceneLoader {
 

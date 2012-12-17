@@ -1,4 +1,4 @@
-package pl.reaper.fx.framework.scene.beans.scene;
+package pl.reaper.fx.framework.scene;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -6,7 +6,7 @@ import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
-import pl.reaper.fx.framework.scene.beans.SceneController;
+import pl.reaper.fx.framework.scene.SceneController;
 import pl.reaper.fx.framework.scene.events.stage.StageClosed;
 
 public class StagesManager {

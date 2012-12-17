@@ -1,4 +1,4 @@
-package pl.reaper.fx.framework.scene.beans;
+package pl.reaper.fx.framework.scene;
 
 import java.util.Objects;
 import java.util.UUID;
@@ -7,9 +7,8 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.stage.Stage;
-import pl.reaper.fx.framework.scene.beans.annotations.FXMLController;
-import pl.reaper.fx.framework.scene.beans.annotations.SceneEventHandler;
-import pl.reaper.fx.framework.scene.beans.scene.ControllersManager;
+import pl.reaper.fx.framework.scene.annotations.FXMLController;
+import pl.reaper.fx.framework.scene.annotations.SceneEventHandler;
 import pl.reaper.fx.framework.scene.events.SceneEvent;
 import pl.reaper.fx.framework.scene.events.stage.StageClosed;
 
