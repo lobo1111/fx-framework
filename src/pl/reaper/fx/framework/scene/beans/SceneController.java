@@ -1,71 +1,114 @@
 package pl.reaper.fx.framework.scene.beans;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.net.URL;
-import java.util.ResourceBundle;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.Objects;
+import java.util.UUID;
+import javafx.collections.ObservableList;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.stage.Stage;
+import pl.reaper.fx.framework.scene.beans.annotations.FXMLController;
 import pl.reaper.fx.framework.scene.beans.annotations.SceneEventHandler;
+import pl.reaper.fx.framework.scene.beans.scene.ControllersManager;
 import pl.reaper.fx.framework.scene.events.SceneEvent;
 import pl.reaper.fx.framework.scene.events.stage.StageClosed;
 
 public abstract class SceneController implements Initializable {
 
-    @Override
-    public void initialize(URL url, ResourceBundle rb) {
-        ControllersManager.getInstance().addController(this);
-        onInit();
+    private UUID id = UUID.randomUUID();
+    private Parent fxml;
+    private Stage stage;
+
+    public UUID getId() {
+        return id;
+    }
+
+    public Parent getFxml() {
+        return fxml;
+    }
+
+    public void setFxml(Parent fxml) {
+        this.fxml = fxml;
+    }
+
+    public Stage getStage() {
+        return stage;
+    }
+
+    public void setStage(Stage stage) {
+        this.stage = stage;
     }
 
     public void fireEvent(SceneEvent event) {
         ControllersManager.getInstance().fireEvent(event);
     }
 
-    protected abstract void onInit();
-
     @SceneEventHandler
     public void stageClosed(StageClosed event) {
-        if (event.getController().getCanonicalName().equals(this.getClass().getCanonicalName())) {
-            disposeController();
+        if (event.getController().equals(this)) {
+            dispose();
+            handleStage();
         }
     }
 
-    public void disposeController() {
-        if (!SceneLoader.isSingleton(this.getClass())) {
-            disposeChildControllers();
-            ControllersManager.getInstance().removeController(this);
+    public void dispose() {
+        if (!SceneController.isSingleton(this.getClass())) {
+            checkFields(fxml.getChildrenUnmodifiable());
         }
-
     }
 
-    private void disposeChildControllers() {
-        for (Field field : this.getClass().getDeclaredFields()) {
-            if (SceneController.class.isAssignableFrom(field.getType())) {
-                disposeChildController(field);
+    public static boolean isSingleton(Class<? extends SceneController> requestedController) {
+        return requestedController.isAnnotationPresent(FXMLController.class)
+                && requestedController.getAnnotation(FXMLController.class).singleton();
+    }
+
+    public String getRootId() {
+        if (this.getClass().isAnnotationPresent(FXMLController.class)) {
+            return this.getClass().getAnnotation(FXMLController.class).fxmlRootId();
+        } else {
+            return null;
+        }
+    }
+
+    private void checkFields(ObservableList<Node> children) {
+        for (Node child : children) {
+            if (ControllersManager.getInstance().isParent(child.getId())) {
+                SceneController controller = ControllersManager.getInstance().getController(child.getId());
+                checkFields(controller.getFxml().getChildrenUnmodifiable());
             }
         }
+        ControllersManager.getInstance().removeController(this);
     }
 
-    private void disposeChildController(Field field) {
-        try {
-            field.setAccessible(true);
-            Method disposeMethod = field.getType().getMethod("disposeController");
-            disposeMethod.invoke(field.get(this));
-        } catch (Exception ex) {
-            Logger.getLogger(SceneController.class.getName()).log(Level.SEVERE, null, ex);
+    private void handleStage() {
+        if (stage != null) {
+            if (SceneController.isSingleton(this.getClass())) {
+                stage.hide();
+            } else {
+                stage.close();
+            }
         }
     }
 
     @Override
     public boolean equals(Object obj) {
-        return obj != null && obj.getClass().getCanonicalName().equals(this.getClass().getCanonicalName());
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final SceneController other = (SceneController) obj;
+        if (!Objects.equals(this.id, other.id)) {
+            return false;
+        }
+        return true;
     }
 
     @Override
     public int hashCode() {
-        int hash = 3;
+        int hash = 7;
+        hash = 67 * hash + Objects.hashCode(this.id);
         return hash;
     }
 }

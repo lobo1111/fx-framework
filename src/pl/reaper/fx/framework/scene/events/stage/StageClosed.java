@@ -5,13 +5,13 @@ import pl.reaper.fx.framework.scene.events.SceneEvent;
 
 public class StageClosed extends SceneEvent {
 
-    private Class<? extends SceneController> controller;
+    private SceneController controller;
 
-    public StageClosed(Class<? extends SceneController> controller) {
+    public StageClosed(SceneController controller) {
         this.controller = controller;
     }
 
-    public Class<? extends SceneController> getController() {
+    public SceneController getController() {
         return controller;
     }
 }

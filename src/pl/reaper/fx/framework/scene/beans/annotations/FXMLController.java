@@ -7,6 +7,6 @@ import java.lang.annotation.RetentionPolicy;
 public @interface FXMLController {
 
     String fxmlPath();
-    
+    String fxmlRootId();
     boolean singleton();
 }
