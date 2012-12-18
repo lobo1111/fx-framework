@@ -6,8 +6,7 @@ import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
-import pl.reaper.fx.framework.scene.SceneController;
-import pl.reaper.fx.framework.scene.events.stage.StageClosed;
+import pl.reaper.fx.framework.scene.events.stage.CloseStage;
 
 public class StagesManager {
 
@@ -31,10 +30,22 @@ public class StagesManager {
                 new EventHandler<WindowEvent>() {
                     @Override
                     public void handle(final WindowEvent event) {
-                        ControllersManager.getInstance().fireEvent(new StageClosed(controller));
+                        ControllersManager.getInstance().fireEvent(new CloseStage(controller));
                     }
                 });
-        stage.setScene(new Scene(ControllersManager.getInstance().getController(controller.getClass()).getFxml()));
+        stage.setScene(new Scene(controller.getFxml()));
         return stage;
+    }
+
+    private StagesManager() {
+    }
+
+    private static class StagesManagerHolder {
+
+        private static final StagesManager INSTANCE = new StagesManager();
+    }
+
+    public static StagesManager getInstance() {
+        return StagesManagerHolder.INSTANCE;
     }
 }

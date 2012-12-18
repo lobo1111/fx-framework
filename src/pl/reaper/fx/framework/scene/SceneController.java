@@ -2,6 +2,8 @@ package pl.reaper.fx.framework.scene;
 
 import java.util.Objects;
 import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.collections.ObservableList;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
@@ -10,7 +12,8 @@ import javafx.stage.Stage;
 import pl.reaper.fx.framework.scene.annotations.FXMLController;
 import pl.reaper.fx.framework.scene.annotations.SceneEventHandler;
 import pl.reaper.fx.framework.scene.events.SceneEvent;
-import pl.reaper.fx.framework.scene.events.stage.StageClosed;
+import pl.reaper.fx.framework.scene.events.stage.CloseStage;
+import pl.reaper.fx.framework.scene.helpers.SceneLoader;
 
 public abstract class SceneController implements Initializable {
 
@@ -43,7 +46,7 @@ public abstract class SceneController implements Initializable {
     }
 
     @SceneEventHandler
-    public void stageClosed(StageClosed event) {
+    public void close(CloseStage event) {
         if (event.getController().equals(this)) {
             dispose();
             handleStage();
@@ -51,6 +54,7 @@ public abstract class SceneController implements Initializable {
     }
 
     public void dispose() {
+        Logger.getLogger(SceneLoader.class.getName()).log(Level.SEVERE, "Disposing controller {0} id:{1}", new Object[]{getClass(), getId()});
         if (!SceneController.isSingleton(this.getClass())) {
             checkFields(fxml.getChildrenUnmodifiable());
         }
