@@ -1,18 +1,21 @@
 package pl.reaper.fx.framework.scene;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.net.URL;
 import java.util.Objects;
+import java.util.ResourceBundle;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.collections.ObservableList;
 import javafx.fxml.Initializable;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.stage.Stage;
 import pl.reaper.fx.framework.scene.annotations.FXMLController;
 import pl.reaper.fx.framework.scene.annotations.SceneEventHandler;
 import pl.reaper.fx.framework.scene.events.SceneEvent;
 import pl.reaper.fx.framework.scene.events.stage.CloseStage;
+import pl.reaper.fx.framework.scene.exceptions.ForbiddenSingletonInitialization;
 import pl.reaper.fx.framework.scene.helpers.SceneLoader;
 
 public abstract class SceneController implements Initializable {
@@ -54,9 +57,14 @@ public abstract class SceneController implements Initializable {
     }
 
     public void dispose() {
-        Logger.getLogger(SceneLoader.class.getName()).log(Level.SEVERE, "Disposing controller {0} id:{1}", new Object[]{getClass(), getId()});
         if (!SceneController.isSingleton(this.getClass())) {
-            checkFields(fxml.getChildrenUnmodifiable());
+            Logger.getLogger(SceneLoader.class.getName()).log(Level.INFO, "Disposing controller {0} id:{1}", new Object[]{getClass(), getId()});
+            for (Field field : this.getClass().getDeclaredFields()) {
+                checkField(field);
+            }
+            ControllersManager.getInstance().removeController(this);
+        } else {
+            Logger.getLogger(SceneLoader.class.getName()).log(Level.INFO, "Controller {0} id:{1} is a singleton, will not be disposed", new Object[]{getClass(), getId()});
         }
     }
 
@@ -65,22 +73,16 @@ public abstract class SceneController implements Initializable {
                 && requestedController.getAnnotation(FXMLController.class).singleton();
     }
 
-    public String getRootId() {
-        if (this.getClass().isAnnotationPresent(FXMLController.class)) {
-            return this.getClass().getAnnotation(FXMLController.class).fxmlRootId();
-        } else {
-            return null;
-        }
-    }
-
-    private void checkFields(ObservableList<Node> children) {
-        for (Node child : children) {
-            if (ControllersManager.getInstance().isParent(child.getId())) {
-                SceneController controller = ControllersManager.getInstance().getController(child.getId());
-                checkFields(controller.getFxml().getChildrenUnmodifiable());
+    private void checkField(Field field) {
+        if (SceneController.class.isAssignableFrom(field.getType())) {
+            try {
+                field.setAccessible(true);
+                Method disposeMethod = field.getType().getMethod("dispose");
+                disposeMethod.invoke(field.get(this));
+            } catch (Exception ex) {
+                Logger.getLogger(SceneController.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-        ControllersManager.getInstance().removeController(this);
     }
 
     private void handleStage() {
@@ -113,5 +115,17 @@ public abstract class SceneController implements Initializable {
         int hash = 7;
         hash = 67 * hash + Objects.hashCode(this.id);
         return hash;
+    }
+
+    @Override
+    public void initialize(URL url, ResourceBundle rb) {
+        if (SceneController.isSingleton(getClass()) && ControllersManager.getInstance().isInitialized(getClass())) {
+            throw new ForbiddenSingletonInitialization("Singleton can't be included by fx:include tag.");
+        }
+        ControllersManager.getInstance().addController(this);
+        onInit();
+    }
+
+    protected void onInit() {
     }
 }
