@@ -49,11 +49,15 @@ public abstract class SceneController implements Initializable {
     }
 
     @SceneEventHandler
-    public void close(CloseStage event) {
+    public void closeEventHandler(CloseStage event) {
         if (event.getController().equals(this)) {
-            dispose();
-            handleStage();
+            close();
         }
+    }
+
+    public void close() {
+        dispose();
+        handleStage();
     }
 
     public void dispose() {
