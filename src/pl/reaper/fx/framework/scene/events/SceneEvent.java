@@ -2,7 +2,7 @@ package pl.reaper.fx.framework.scene.events;
 
 public abstract class SceneEvent {
 
-    private String message;
+    protected String message;
 
     public SceneEvent() {
     }
